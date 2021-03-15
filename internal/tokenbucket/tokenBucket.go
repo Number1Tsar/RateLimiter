@@ -1,8 +1,10 @@
-package RateLimiter
+package tokenbucket
 
 import (
 	"sync"
 	"time"
+
+	"github.com/Number1Tsar/RateLimiter"
 )
 
 type bucket struct {
@@ -14,7 +16,7 @@ type bucket struct {
 }
 
 // NewBucket initializes TokenBucket based rate Limiter with capacity, refill amount and refill interval.
-func NewBucket(capacity int, refillQuantum int, refillInterval time.Duration) RateLimiter {
+func NewBucket(capacity int, refillQuantum int, refillInterval time.Duration) RateLimiter.RateLimiter {
 	b := &bucket{
 		capacity:       capacity,
 		refillQuantum:  refillQuantum,
@@ -25,9 +27,9 @@ func NewBucket(capacity int, refillQuantum int, refillInterval time.Duration) Ra
 	return b
 }
 
-// Take checks if enough tokens are available to service request. If the tokens are present it signals true otherwise
+// AttemptRequest checks if enough tokens are available to service request. If the tokens are present it signals true otherwise
 // returns false
-func (b *bucket) Take() bool {
+func (b *bucket) AttemptRequest() bool {
 	b.Lock()
 	defer b.Unlock()
 	if b.currentToken <= 0 {
